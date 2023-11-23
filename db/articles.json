@@ -1,0 +1,26 @@
+{
+  "1": {
+    "id": 1,
+    "title": "Легенда доты 2",
+    "image": "/img/dyrachyo.png",
+    "content": "О себе: 21 год, фруктоед"
+  },
+  "2": {
+    "id": 2,
+    "title": "Чем питается",
+    "image": "/img/frukti.png",
+    "content": "Фруктики, ягодки"
+  },
+  "3": {
+    "id": 3,
+    "title": "Место жительства",
+    "image": "/img/maxresdefault.png",
+    "content": "Массажное кресло"
+  },
+  "4": {
+    "id": 4,
+    "title": "Другальки",
+    "image": "/img/gaimin-gladiators-won-bali-major.png",
+    "content": "Челики из Gaimin Gladiators"
+  }
+}

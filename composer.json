@@ -1,0 +1,13 @@
+{
+    "name": "user/hihihiha",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "require": {
+        "noahbuscher/macaw": "dev-master",
+        "tracy/tracy": "^2.10",
+        "twig/twig": "^3.7"
+    }
+}
