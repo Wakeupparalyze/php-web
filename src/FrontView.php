@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace App;
 
@@ -13,7 +13,7 @@ class FrontView
     public function __construct()
     {
 
-        $this->loader = new \Twig\Loader\FilesystemLoader('template/frontend/');
+        $this->loader = new \Twig\Loader\FilesystemLoader('frontend/');
         $this->twig = new \Twig\Environment($this->loader, [
 //            'cache' => '/path/to/compilation_cache',
         ]);

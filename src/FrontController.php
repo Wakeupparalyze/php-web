@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App;
 
-use  App\Helper as h;
+use App\Service\ArticleService;
+use App\View;
+use App\Models;
 
 class FrontController
 {

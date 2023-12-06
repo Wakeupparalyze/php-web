@@ -1,25 +1,62 @@
 <?php
 declare(strict_types=1);
-session_start();
-require 'vendor/autoload.php'; // альтернатива tracy.phar
-use \NoahBuscher\Macaw\Macaw;
-use Tracy\Debugger;
-Debugger::enable();
+
+require('vendor/autoload.php');
 
 
+use FastRoute\RouteCollector;
+use Opis\Database\Connection;
+use Opis\Database\Database;
+use Psr\Container\ContainerInterface;
+use function DI\factory;
 
-Macaw::get('/', 'App\FrontController@index');
-Macaw::get('/article/(:num)', 'App\FrontController@article');
-Macaw::get('/admin', 'App\FrontController@admin');
-Macaw::get('/adminpanel', 'App\FrontController@adminpanel');
-Macaw::get('/about', 'App\FrontController@goAbout');
-Macaw::get('/articles', 'App\FrontController@index');
-Macaw::get('/portfolio', 'App\FrontController@portfolio');
-Macaw::get('/team', 'App\FrontController@team');
+$whoops = new \Whoops\Run;
+$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+$whoops->register();
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
+$containerBuilder = new \DI\ContainerBuilder();
+$containerBuilder->useAutowiring(false);
+$containerBuilder->useAttributes(false);
+$containerBuilder->addDefinitions('config/config.php');
+$container = $containerBuilder->build();
 
-Macaw::dispatch();
+$dispatcher = FastRoute\simpleDispatcher(function (RouteCollector $r) {
+    $r->addRoute('GET', '/', ['App\FrontController', 'index']);
+    $r->addRoute('GET', 'article/(:num)', ['App\FrontEndController', '/article']);
+    $r->addRoute('GET', 'admin', ['App\BackEndController', '/admin']);
+    $r->addRoute('GET', 'admin/articles', ['App\BackEndController', '/adminArticlesPage']);
+    $r->addRoute('POST','admin/update', ['App\BackEndController', '/adminUpdateArticle']);
+    $r->addRoute('GET', 'admin/article/edit/(:num)', ['App\BackEndController', '/adminEditArticle']);
+    $r->addRoute('GET', 'admin/article/create', ['App\BackEndController', '/adminCreateArticle']);
+    $r->addRoute('GET', 'admin/article/delete/(:num)', ['App\BackEndController', '/adminDeleteArticle']);
+    $r->addRoute('GET', 'about', ['App\FrontEndController', 'goAbout']);
+    $r->addRoute('GET', 'articles', ['App\FrontEndController', 'index']);
+    $r->addRoute('GET', 'portfolio', ['App\BackEndController', 'portfolio']);
+    $r->addRoute('GET', 'team', ['App\BackEndController', 'team']);
+});
+
+$route = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+switch ($route[0]) {
+    case FastRoute\Dispatcher::NOT_FOUND:
+        echo '404 Not Found';
+        break;
+
+    case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+        echo '405 Method Not Allowed';
+        break;
+
+    case FastRoute\Dispatcher::FOUND:
+        $controller = $route[1];
+        $parameters = $route[2];
+
+        // We could do $container->get($controller) but $container->call()
+        // does that automatically
+        $container->call($controller, $parameters);
+        break;
+}
 
 
 
